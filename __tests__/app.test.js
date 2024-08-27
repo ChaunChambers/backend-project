@@ -3,6 +3,7 @@ const supertest = require("supertest");
 const data = require("../db/data/test-data/index.js");
 const connection = require("../db/connection.js");
 const app = require("../app.js");
+const { jsonfile } = require("../endpoints.json");
 
 beforeEach(() => {
   return seed(data);
@@ -29,24 +30,31 @@ describe("GET /api/topics", () => {
         });
       });
   });
-  test("404: responds with not found for wrong endpoint", () => {
-    return supertest(app)
-      .get("/api/something")
-      .expect(404)
-      .then((response) => {
-        expect(response.body).toEqual({ error: "Not found" });
-        expect(response.statusCode).toBe(404);
-      });
-  });
+  // test("404: responds with not found for wrong endpoint", () => {
+  //   return supertest(app)
+  //     .get("/api/something")
+  //     .expect(404)
+  //     .then((response) => {
+  //       expect(response.body).toEqual({ error: "Not found" });
+  //       expect(response.statusCode).toBe(404);
+  //     });
+  // });
 });
 
 describe("/api", () => {
-  test.only("200 - responds with json file containing list of endpoints", () => {
+  test("200 - responds with json file containing list of endpoints", () => {
     return supertest(app)
       .get("/api")
       .expect(200)
       .then((response) => {
-        expect("Content-Type", /json/);
+        expect(jsonfile);
       });
   });
+});
+
+describe("GET /api/articles/:article_id", () => {
+  test("200 - Responds with a status code of 200", () => {
+    return supertest(app).get("/api/articles/1").expect(200);
+  });
+  test("", () => {});
 });

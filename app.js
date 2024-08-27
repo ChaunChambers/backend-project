@@ -1,11 +1,18 @@
 const express = require("express");
 const app = express();
-const { getAllTopics, getApi } = require("./controllers/news.controller");
+const {
+  getAllTopics,
+  getApi,
+  getArticleByArticleId,
+} = require("./controllers/news.controller");
 const { notFoundHandler } = require("./error_handling/errors");
 
 app.get("/api/topics", getAllTopics);
 
 app.get("/api", getApi);
+
+app.get("/api/articles/:article_id", getArticleByArticleId);
+
 // CODE BELOW IS NOT WORKING
 
 app.get("/api/*", function (req, res) {
