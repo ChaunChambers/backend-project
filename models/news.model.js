@@ -8,5 +8,11 @@ exports.selectTopics = () => {
 };
 
 exports.selectApi = () => {
-  return fs.readFile(`${__dirname}/endpoints.json`);
+  return fs
+    .readFile(
+      `/Users/chaunchambers/Northcoders/backend/be-nc-news/endpoints.json`
+    )
+    .then((endpoints) => {
+      return endpoints;
+    });
 };

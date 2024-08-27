@@ -9,5 +9,7 @@ exports.getAllTopics = (request, response, next) => {
 };
 
 exports.getApi = (request, response, next) => {
-  selectApi();
+  selectApi().then((data) => {
+    response.status(200).send({ data });
+  });
 };

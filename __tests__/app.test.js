@@ -13,7 +13,7 @@ afterAll(() => {
 });
 
 describe("GET /api/topics", () => {
-  test.only("200: responds with an array of topic objects", () => {
+  test("200: responds with an array of topic objects", () => {
     return supertest(app)
       .get("/api/topics")
       .expect(200)
@@ -41,7 +41,7 @@ describe("GET /api/topics", () => {
 });
 
 describe("/api", () => {
-  test("200 - responds with json file containing list of endpoints", () => {
+  test.only("200 - responds with json file containing list of endpoints", () => {
     return supertest(app)
       .get("/api")
       .expect(200)
