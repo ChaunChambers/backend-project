@@ -13,6 +13,10 @@ app.get("/api", getApi);
 
 app.get("/api/articles/:article_id", getArticleByArticleId);
 
+app.all("/*", (req, res) => {
+  res.status(404).send({ msg: "Not found" });
+});
+
 app.use((err, request, response, next) => {
   if (err.code === "22P02") {
     response.status(400).send({ message: "Bad request" });
@@ -23,16 +27,16 @@ app.use((err, request, response, next) => {
 
 // CODE BELOW IS NOT WORKING
 
-app.get("/api/*", function (req, res) {
-  try {
-    throw new Error("Not found");
-  } catch (error) {
-    // Handle the error
-    res.status(404).send("Not found");
-  }
-});
+// app.get("/api/*", function (req, res) {
+//   try {
+//     throw new Error("Not found");
+//   } catch (error) {
+//     // Handle the error
+//     res.status(404).send("Not found");
+//   }
+// });
 
-app.use(notFoundHandler);
+// app.use(notFoundHandler);
 
 // UNTIL HERE
 module.exports = app;
