@@ -5,8 +5,13 @@ const {
   getApi,
   getArticleByArticleId,
   getAllArticles,
+  getCommentsByArticleId,
+  postCommentByArticleId,
+  updateArticleById,
 } = require("./controllers/news.controller");
 const { getErrorHandler } = require("./error_handling/errors");
+
+app.use(express.json());
 
 app.get("/api/topics", getAllTopics);
 
@@ -15,6 +20,12 @@ app.get("/api", getApi);
 app.get("/api/articles/:article_id", getArticleByArticleId);
 
 app.get("/api/articles", getAllArticles);
+
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
+
+app.post("/api/articles/:article_id/comments", postCommentByArticleId);
+
+app.patch("/api/articles/:article_id", updateArticleById);
 
 app.use(getErrorHandler);
 

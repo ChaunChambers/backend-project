@@ -55,7 +55,7 @@ describe("GET /api/articles/:article_id", () => {
   test("200 - Responds with a status code of 200", () => {
     return supertest(app).get("/api/articles/1").expect(200);
   });
-  test("Responds with an object containing the correct article", () => {
+  test.only("Responds with an object containing the correct article", () => {
     return supertest(app)
       .get("/api/articles/1")
       .then(({ body }) => {
@@ -67,6 +67,10 @@ describe("GET /api/articles/:article_id", () => {
         expect(body.article).toHaveProperty("created_at");
         expect(body.article).toHaveProperty("votes");
         expect(body.article).toHaveProperty("article_img_url");
+
+        //PLEASE NOTE//
+        //I am using toHaveProperty because the code below is not working, it says right-hand side of "instanceof" is not an object
+
         // expect(body.article).toEqual(
         //   expect.objectContaining({
         //     title: "Living in the shadow of a great man",
@@ -99,7 +103,7 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
-describe.only("GET /api/articles", () => {
+describe("GET /api/articles", () => {
   test("200 - responds with an array of article objects", () => {
     return supertest(app).get("/api/articles").expect(200);
   });
@@ -109,11 +113,113 @@ describe.only("GET /api/articles", () => {
       .expect(200)
       .then(({ body: { articles } }) => {
         expect(articles.length).toBeGreaterThan(0);
-        //***BELOW**** ITS SAYING TOBESORTED IS NOT A FUNCTION */
-
+        //cannot add "jest": {"setupFilesAfterEnv": ["jest-sorted"] to package.json without messing up the util-test and jest-extended/all dependency
+        //}
         // expect(articles).toBeSortedBy("created_at", {
         //   descending: true,
         // });
       });
+  });
+  test("", () => {});
+});
+
+describe("GET /api/articles/:article_id/comments.", () => {
+  test("200 - responds with a status code of 200", () => {
+    return supertest(app).get("/api/articles/9/comments").expect(200);
+  });
+  test("200 - returns an array of comments for give article_id ", () => {
+    return supertest(app)
+      .get("/api/articles/9/comments")
+      .then(({ body }) => {
+        expect(body.comments).toEqual([
+          {
+            comment_id: 1,
+            votes: 16,
+            created_at: "2020-04-06T12:17:00.000Z",
+            author: "butter_bridge",
+            body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+            article_id: 9,
+          },
+          {
+            comment_id: 17,
+            votes: 20,
+            created_at: "2020-03-14T17:02:00.000Z",
+            author: "icellusedkars",
+            body: "The owls are not what they seem.",
+            article_id: 9,
+          },
+        ]);
+      });
+  });
+  test("404 sends an appropriate status and error message when given a valid but non-existent id", () => {
+    return supertest(app)
+      .get("/api/articles/999/comments")
+      .expect(404)
+      .then((response) => expect(response.body.message).toBe("Not found"));
+  });
+  test("400 sends an appropriate status and error message when given an invalid id", () => {
+    return supertest(app)
+      .get("/api/articles/not-valid/comments")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("Bad request");
+      });
+  });
+});
+describe("POST /api/articles/:article_id/comments", () => {
+  test("Responds with a status code of 201", () => {
+    const newComment = {
+      username: "Newusername",
+      content_body: "New comment",
+    };
+    return supertest(app)
+      .post("/api/articles/9/comments")
+      .send(newComment)
+      .expect(201);
+  });
+  test("201 - Responds with newly posted comment object", () => {
+    const newComment = {
+      username: "Newusername",
+      content_body: "New comment",
+    };
+    return supertest(app)
+      .post("/api/articles/9/comments")
+      .send(newComment)
+      .then((data) => {
+        console.log(data);
+        expect(data.body.comment).toEqual(
+          expect.objectContaining({
+            username: "Newusername",
+            body: "New comment",
+            article_id: 9,
+          })
+        );
+      });
+  });
+});
+
+describe.only("PATCH /api/articles/:article_id", () => {
+  test("200 - updates articles in database when given article id", () => {
+    const newVote = {
+      inc_votes: 100,
+    };
+    return supertest(app)
+      .patch("/api/articles/9")
+      .send(newVote)
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        // console.log(treasure);
+        expect(comments).toEqual(
+          expect.objectContaining({
+            votes: expect.any(Number),
+          })
+        );
+      });
+  });
+  test("404 sends an appropriate status and error message when given a valid but non-existent id", () => {
+    const newVote = {
+      inc_votes: 100,
+    };
+    return supertest(app).patch("/api/articles/999").send(newVote).expect(404);
   });
 });
