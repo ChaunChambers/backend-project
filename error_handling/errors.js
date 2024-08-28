@@ -1,6 +1,7 @@
-exports.notFoundHandler = (req, res, next) => {
-  res.status(404).json({
-    error: 404,
-    message: "Not found.",
-  });
+exports.getErrorHandler = (err, request, response, next) => {
+  if (err.code === "22P02") {
+    response.status(400).send({ message: "Bad request" });
+  } else if (response) {
+    response.status(404).send({ message: "Not found" });
+  } else next();
 };

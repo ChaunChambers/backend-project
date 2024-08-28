@@ -2,6 +2,7 @@ const {
   selectTopics,
   selectApi,
   selectArticle,
+  getArticles,
 } = require("../models/news.model");
 
 exports.getAllTopics = (request, response, next) => {
@@ -26,4 +27,10 @@ exports.getArticleByArticleId = (request, response, next) => {
       // console.log(err);
       next(err);
     });
+};
+
+exports.getAllArticles = (request, response, next) => {
+  getArticles().then((articles) => {
+    response.status(200).send({ articles });
+  });
 };
