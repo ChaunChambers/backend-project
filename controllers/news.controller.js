@@ -3,6 +3,9 @@ const {
   selectApi,
   selectArticle,
   getArticles,
+  selectComments,
+  createCommentByArticleId,
+  updateArticle,
 } = require("../models/news.model");
 
 exports.getAllTopics = (request, response, next) => {
@@ -32,5 +35,31 @@ exports.getArticleByArticleId = (request, response, next) => {
 exports.getAllArticles = (request, response, next) => {
   getArticles().then((articles) => {
     response.status(200).send({ articles });
+  });
+};
+
+exports.getCommentsByArticleId = (request, response, next) => {
+  const { article_id } = request.params;
+  selectComments(article_id)
+    .then((comments) => {
+      response.status(200).send({ comments });
+    })
+    .catch((err) => next(err));
+};
+
+exports.postCommentByArticleId = (request, response, next) => {
+  const { body } = request;
+  const { article_id } = request.params;
+  createCommentByArticleId(body, article_id).then((comment) => {
+    console.log(comment);
+    response.status(201).send({ msg: "the posted comment" });
+  });
+};
+
+exports.updateArticleById = (request, response, next) => {
+  const { body } = request;
+  const { article_id } = request.params;
+  updateArticle(body, article_id).then((comments) => {
+    response.status(200).send({ comments });
   });
 };
