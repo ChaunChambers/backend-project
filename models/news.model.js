@@ -9,10 +9,7 @@ exports.selectTopics = () => {
 
 exports.selectApi = () => {
   return fs
-    .readFile(
-      `/Users/chaunchambers/Northcoders/backend/be-nc-news/endpoints.json`,
-      "utf-8"
-    )
+    .readFile(`${__dirname}/../endpoints.json`, "utf-8")
     .then((endpoints) => {
       // console.log(endpoints);
       return endpoints;
@@ -31,4 +28,15 @@ exports.selectArticle = (article_id) => {
       }
       return rows[0];
     });
+};
+
+exports.getArticles = () => {
+  let queryString = `SELECT COUNT (comments.article_id) AS comment_count, articles.title, articles.topic, articles.author, articles.created_at, articles.votes,articles.article_img_url, comments.article_id FROM articles JOIN comments ON articles.article_id = comments.article_id 
+GROUP BY articles.title, articles.topic, articles.author, articles.created_at, articles.votes,articles.article_img_url, comments.article_id 
+ORDER BY created_at DESC;`;
+
+  return db.query(queryString).then((data) => {
+    // console.log(data);
+    return data.rows;
+  });
 };
