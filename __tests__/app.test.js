@@ -103,7 +103,7 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
-describe.only("GET /api/articles", () => {
+describe("GET /api/articles", () => {
   test("200 - responds with an array of article objects", () => {
     return supertest(app).get("/api/articles").expect(200);
   });
@@ -194,6 +194,26 @@ describe("POST /api/articles/:article_id/comments", () => {
         );
       });
   });
+  test("201 - posts comment if extra properties sent with post", () => {
+    const newComment = {
+      username: "butter_bridge",
+      content_body: "New comment",
+      votes: 20,
+    };
+    return supertest(app)
+      .post("/api/articles/3/comments")
+      .send(newComment)
+      .expect(201)
+      .then((data) => {
+        expect(data.body.comment).toEqual(
+          expect.objectContaining({
+            author: "butter_bridge",
+            body: "New comment",
+            article_id: 3,
+          })
+        );
+      });
+  });
   test("404 sends an appropriate status and error message when attempting to post with a valid but non-existent article id", () => {
     const newComment = {
       username: "butter_bridge",
@@ -220,6 +240,16 @@ describe("POST /api/articles/:article_id/comments", () => {
     const newComment = {
       username: "fake_username",
       content_body: "New comment",
+    };
+    return supertest(app)
+      .post("/api/articles/9/comments")
+      .send(newComment)
+      .expect(404)
+      .then((response) => expect(response.body.message).toBe("Not found"));
+  });
+  test("400 - if username or body is missing", () => {
+    const newComment = {
+      username: "butter_bridge",
     };
     return supertest(app)
       .post("/api/articles/9/comments")
@@ -307,6 +337,7 @@ describe("GET /api/users", () => {
         // expect(body.user).toHaveProperty("username");
         // expect(body.user).toHaveProperty("name");
         // expect(body.user).toHaveProperty("avatar_url")
+        expect(users.length).toBeGreaterThan(0);
         users.forEach((user) => {
           expect(user).toEqual(
             expect.objectContaining({
