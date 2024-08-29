@@ -6,6 +6,7 @@ const {
   selectComments,
   createCommentByArticleId,
   updateArticle,
+  deleteItem,
 } = require("../models/news.model");
 
 exports.getAllTopics = (request, response, next) => {
@@ -62,4 +63,15 @@ exports.updateArticleById = (request, response, next) => {
   updateArticle(body, article_id).then((comments) => {
     response.status(200).send({ comments });
   });
+};
+
+exports.deleteByCommentId = (request, response, next) => {
+  const { comment_id } = request.params;
+  deleteItem(comment_id)
+    .then((deleted) => {
+      response.status(204).send({ message: "No content" });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
