@@ -103,7 +103,7 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
-describe("GET /api/articles", () => {
+describe.only("GET /api/articles", () => {
   test("200 - responds with an array of article objects", () => {
     return supertest(app).get("/api/articles").expect(200);
   });
@@ -113,11 +113,9 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body: { articles } }) => {
         expect(articles.length).toBeGreaterThan(0);
-        //cannot add "jest": {"setupFilesAfterEnv": ["jest-sorted"] to package.json without messing up the util-test and jest-extended/all dependency
-        //}
-        // expect(articles).toBeSortedBy("created_at", {
-        //   descending: true,
-        // });
+        expect(articles).toBeSortedBy("created_at", {
+          descending: true,
+        });
       });
   });
   test("", () => {});
@@ -318,6 +316,52 @@ describe("GET /api/users", () => {
             })
           );
         });
+      });
+  });
+});
+
+describe("GET /api/articles (sorting queries)", () => {
+  test("200 - responds with all articles sorted by any column in order given", () => {
+    return supertest(app)
+      .get("/api/articles?sort_by=title&order=desc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBeGreaterThan(0);
+        expect(articles).toBeSortedBy("title", { descending: true });
+      });
+  });
+  test("200 - responds with all articles sorted by created_at (default) given the order only", () => {
+    return supertest(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBeGreaterThan(0);
+        expect(articles).toBeSortedBy("created_at", { ascending: true });
+      });
+  });
+  test("200 - responds will all articles sorted by given column in ascending order (default)", () => {
+    return supertest(app)
+      .get("/api/articles?sort_by=topic")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBeGreaterThan(0);
+        expect(articles).toBeSortedBy("topic", { ascending: true });
+      });
+  });
+  test("404 - responds with appropriate status and message given an valid sort_by query that doesn't exist", () => {
+    return supertest(app)
+      .get("/api/articles?sort_by=apple")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe("Not found");
+      });
+  });
+  test("404 - responds with appropriate status code and message given valid order query that doesn't exist", () => {
+    return supertest(app)
+      .get("/api/articles?order=up")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe("Not found");
       });
   });
 });

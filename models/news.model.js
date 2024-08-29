@@ -30,13 +30,21 @@ exports.selectArticle = (article_id) => {
     });
 };
 
-exports.getArticles = () => {
+exports.getArticles = (sort_by, order) => {
   let queryString = `SELECT COUNT (comments.article_id) AS comment_count, articles.title, articles.topic, articles.author, articles.created_at, articles.votes,articles.article_img_url, comments.article_id FROM articles JOIN comments ON articles.article_id = comments.article_id 
-GROUP BY articles.title, articles.topic, articles.author, articles.created_at, articles.votes,articles.article_img_url, comments.article_id 
-ORDER BY created_at DESC;`;
+GROUP BY articles.title, articles.topic, articles.author, articles.created_at, articles.votes,articles.article_img_url, comments.article_id`;
+
+  if (sort_by && order) {
+    queryString += ` ORDER BY ${sort_by} ${order.toUpperCase()};`;
+  } else if (sort_by) {
+    queryString += ` ORDER BY ${sort_by} ASC;`;
+  } else if (order) {
+    queryString += ` ORDER BY created_at ${order.toUpperCase()};`;
+  } else {
+    queryString += ` ORDER BY created_at DESC`;
+  }
 
   return db.query(queryString).then((data) => {
-    // console.log(data);
     return data.rows;
   });
 };
