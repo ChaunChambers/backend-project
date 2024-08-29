@@ -241,3 +241,30 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
+
+describe.only("DELETE /api/comments/:comment_id", () => {
+  test("Responds with status 204 no content", () => {
+    return supertest(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then((response) => {
+        expect(response.res.statusMessage).toBe("No Content");
+      });
+  });
+  test("400: Attempt to delete comment by comment_id that is the wrong type", () => {
+    return supertest(app)
+      .delete("/api/comments/wrong")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("Bad request");
+      });
+  });
+  test("404: Attempt to delete comment by comment_id that is valid but doesn't exist", () => {
+    return supertest(app)
+      .delete("/api/comments/999")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe("Not found");
+      });
+  });
+});

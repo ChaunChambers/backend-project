@@ -12,7 +12,7 @@ exports.selectApi = () => {
     .readFile(`${__dirname}/../endpoints.json`, "utf-8")
     .then((endpoints) => {
       // console.log(endpoints);
-      return endpoints;
+      return JSON.parse(endpoints);
     });
 };
 
@@ -93,5 +93,16 @@ exports.updateArticle = (body, article_id) => {
             return updatedComment.rows[0];
           });
       }
+    });
+};
+
+exports.deleteItem = (comment_id) => {
+  return db
+    .query(`DELETE from comments WHERE comment_id=$1 RETURNING *`, [comment_id])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, message: "Bad request" });
+      }
+      return rows;
     });
 };
