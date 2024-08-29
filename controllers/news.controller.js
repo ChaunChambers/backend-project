@@ -35,9 +35,12 @@ exports.getArticleByArticleId = (request, response, next) => {
 };
 
 exports.getAllArticles = (request, response, next) => {
-  getArticles().then((articles) => {
-    response.status(200).send({ articles });
-  });
+  const { sort_by, order } = request.query;
+  getArticles(sort_by, order)
+    .then((articles) => {
+      response.status(200).send({ articles });
+    })
+    .catch((err) => next(err));
 };
 
 exports.getCommentsByArticleId = (request, response, next) => {
