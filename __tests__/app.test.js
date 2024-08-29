@@ -55,7 +55,7 @@ describe("GET /api/articles/:article_id", () => {
   test("200 - Responds with a status code of 200", () => {
     return supertest(app).get("/api/articles/1").expect(200);
   });
-  test.only("Responds with an object containing the correct article", () => {
+  test("Responds with an object containing the correct article", () => {
     return supertest(app)
       .get("/api/articles/1")
       .then(({ body }) => {
@@ -166,39 +166,70 @@ describe("GET /api/articles/:article_id/comments.", () => {
       });
   });
 });
-// NOTE POST REQUEST NOT WORKING, cannot put "author.username" in comments table in the model.
 
-// describe("POST /api/articles/:article_id/comments", () => {
-//   test("Responds with a status code of 201", () => {
-//     const newComment = {
-//       username: "Newusername",
-//       content_body: "New comment",
-//     };
-//     return supertest(app)
-//       .post("/api/articles/9/comments")
-//       .send(newComment)
-//       .expect(201);
-//   });
-//   test("201 - Responds with newly posted comment object", () => {
-//     const newComment = {
-//       username: "Newusername",
-//       content_body: "New comment",
-//     };
-//     return supertest(app)
-//       .post("/api/articles/9/comments")
-//       .send(newComment)
-//       .then((data) => {
-//         console.log(data);
-//         expect(data.body.comment).toEqual(
-//           expect.objectContaining({
-//             username: "Newusername",
-//             body: "New comment",
-//             article_id: 9,
-//           })
-//         );
-//       });
-//   });
-// });
+describe("POST /api/articles/:article_id/comments", () => {
+  test("Responds with a status code of 201", () => {
+    const newComment = {
+      username: "butter_bridge",
+      content_body: "New comment",
+    };
+    return supertest(app)
+      .post("/api/articles/9/comments")
+      .send(newComment)
+      .expect(201);
+  });
+  test("201 - Responds with newly posted comment object", () => {
+    const newComment = {
+      username: "butter_bridge",
+      content_body: "New comment",
+    };
+    return supertest(app)
+      .post("/api/articles/9/comments")
+      .send(newComment)
+      .then((data) => {
+        expect(data.body.comment).toEqual(
+          expect.objectContaining({
+            author: "butter_bridge",
+            body: "New comment",
+            article_id: 9,
+          })
+        );
+      });
+  });
+  test("404 sends an appropriate status and error message when attempting to post with a valid but non-existent article id", () => {
+    const newComment = {
+      username: "butter_bridge",
+      content_body: "New comment",
+    };
+    return supertest(app)
+      .post("/api/articles/999/comments")
+      .send(newComment)
+      .expect(404)
+      .then((response) => expect(response.body.message).toBe("Not found"));
+  });
+  test("400 sends an appropriate status and error message when attempting to post with an invalid article id", () => {
+    const newComment = {
+      username: "butter_bridge",
+      content_body: "New comment",
+    };
+    return supertest(app)
+      .post("/api/articles/invalid/comments")
+      .send(newComment)
+      .expect(400)
+      .then((response) => expect(response.body.message).toBe("Bad request"));
+  });
+  test("404 Error when attempting to post with an invalid username", () => {
+    const newComment = {
+      username: "fake_username",
+      content_body: "New comment",
+    };
+    return supertest(app)
+      .post("/api/articles/9/comments")
+      .send(newComment)
+      .expect(404)
+      .then((response) => expect(response.body.message).toBe("Not found"));
+  });
+});
 
 describe("PATCH /api/articles/:article_id", () => {
   test("200 - updates articles in database when given article id", () => {
@@ -242,7 +273,7 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
-describe.only("DELETE /api/comments/:comment_id", () => {
+describe("DELETE /api/comments/:comment_id", () => {
   test("Responds with status 204 no content", () => {
     return supertest(app)
       .delete("/api/comments/1")
@@ -265,6 +296,28 @@ describe.only("DELETE /api/comments/:comment_id", () => {
       .expect(404)
       .then((response) => {
         expect(response.body.message).toBe("Not found");
+      });
+  });
+});
+
+describe("GET /api/users", () => {
+  test("200 responds with an array of objects with the correct properties", () => {
+    return supertest(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body: { users } }) => {
+        // expect(body.user).toHaveProperty("username");
+        // expect(body.user).toHaveProperty("name");
+        // expect(body.user).toHaveProperty("avatar_url")
+        users.forEach((user) => {
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
       });
   });
 });
