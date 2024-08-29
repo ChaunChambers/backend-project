@@ -9,6 +9,7 @@ const {
   postCommentByArticleId,
   updateArticleById,
   deleteByCommentId,
+  getAllUsers,
 } = require("./controllers/news.controller");
 const { getErrorHandler } = require("./error_handling/errors");
 
@@ -23,6 +24,8 @@ app.get("/api/articles/:article_id", getArticleByArticleId);
 app.get("/api/articles", getAllArticles);
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
+
+app.get("/api/users", getAllUsers);
 
 app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 

@@ -7,6 +7,7 @@ const {
   createCommentByArticleId,
   updateArticle,
   deleteItem,
+  selectUsers,
 } = require("../models/news.model");
 
 exports.getAllTopics = (request, response, next) => {
@@ -61,9 +62,11 @@ exports.postCommentByArticleId = (request, response, next) => {
 exports.updateArticleById = (request, response, next) => {
   const { body } = request;
   const { article_id } = request.params;
-  updateArticle(body, article_id).then((comments) => {
-    response.status(200).send({ comments });
-  });
+  updateArticle(body, article_id)
+    .then((comments) => {
+      response.status(200).send({ comments });
+    })
+    .catch((err) => next(err));
 };
 
 exports.deleteByCommentId = (request, response, next) => {
@@ -75,4 +78,10 @@ exports.deleteByCommentId = (request, response, next) => {
     .catch((err) => {
       next(err);
     });
+};
+
+exports.getAllUsers = (request, response, next) => {
+  selectUsers().then((users) => {
+    response.status(200).send({ users });
+  });
 };

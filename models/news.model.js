@@ -79,7 +79,6 @@ exports.updateArticle = (body, article_id) => {
       article_id,
     ])
     .then((doesDataExist) => {
-      console.log(doesDataExist.rows);
       if (doesDataExist.rows.length === 0) {
         return Promise.reject({ status: 404, message: "Not found" });
       } else {
@@ -104,4 +103,10 @@ exports.deleteItem = (comment_id) => {
       }
       return rows;
     });
+};
+
+exports.selectUsers = () => {
+  return db.query("SELECT * FROM users;").then((data) => {
+    return data.rows;
+  });
 };

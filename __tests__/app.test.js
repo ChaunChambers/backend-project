@@ -55,7 +55,7 @@ describe("GET /api/articles/:article_id", () => {
   test("200 - Responds with a status code of 200", () => {
     return supertest(app).get("/api/articles/1").expect(200);
   });
-  test.only("Responds with an object containing the correct article", () => {
+  test("Responds with an object containing the correct article", () => {
     return supertest(app)
       .get("/api/articles/1")
       .then(({ body }) => {
@@ -167,7 +167,7 @@ describe("GET /api/articles/:article_id/comments.", () => {
   });
 });
 
-describe.only("POST /api/articles/:article_id/comments", () => {
+describe("POST /api/articles/:article_id/comments", () => {
   test("Responds with a status code of 201", () => {
     const newComment = {
       username: "butter_bridge",
@@ -296,6 +296,28 @@ describe("DELETE /api/comments/:comment_id", () => {
       .expect(404)
       .then((response) => {
         expect(response.body.message).toBe("Not found");
+      });
+  });
+});
+
+describe("GET /api/users", () => {
+  test("200 responds with an array of objects with the correct properties", () => {
+    return supertest(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body: { users } }) => {
+        // expect(body.user).toHaveProperty("username");
+        // expect(body.user).toHaveProperty("name");
+        // expect(body.user).toHaveProperty("avatar_url")
+        users.forEach((user) => {
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
       });
   });
 });
