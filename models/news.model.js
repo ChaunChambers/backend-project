@@ -62,14 +62,13 @@ exports.createCommentByArticleId = (body, article_id) => {
   return db
     .query(
       `INSERT INTO comments 
-        (author.username, body,article_id)
+        (author, body,article_id)
         VALUES 
     ($1,$2,$3) RETURNING *`,
       [username, content_body, article_id]
     )
     .then((data) => {
-      console.log(data.rows);
-      data.rows;
+      return data.rows[0];
     });
 };
 

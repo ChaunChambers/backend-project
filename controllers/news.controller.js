@@ -51,10 +51,11 @@ exports.getCommentsByArticleId = (request, response, next) => {
 exports.postCommentByArticleId = (request, response, next) => {
   const { body } = request;
   const { article_id } = request.params;
-  createCommentByArticleId(body, article_id).then((comment) => {
-    console.log(comment);
-    response.status(201).send({ msg: "the posted comment" });
-  });
+  createCommentByArticleId(body, article_id)
+    .then((comment) => {
+      response.status(201).send({ comment });
+    })
+    .catch((err) => next(err));
 };
 
 exports.updateArticleById = (request, response, next) => {
