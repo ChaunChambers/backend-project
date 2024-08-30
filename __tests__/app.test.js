@@ -460,3 +460,25 @@ describe("GET /api/articles/:article_id (comment_count)", () => {
       });
   });
 });
+
+describe.only("GET /api/users/:username", () => {
+  test("200 - responds with 200 and returns a user by username", () => {
+    return supertest(app)
+      .get("/api/users/icellusedkars")
+      .expect(200)
+      .then(({ body: { user } }) => {
+        console.log(user);
+        expect(user.username).toEqual("icellusedkars");
+        expect(user).toEqual(
+          expect.objectContaining({
+            username: expect.any(String),
+            avatar_url: expect.any(String),
+            name: expect.any(String),
+          })
+        );
+      });
+  });
+  test("400 - responds with appropriate code and message when a username doesn't exist", () => {
+    return supertest(app).get("/api/users/appletree").expect(404);
+  });
+});

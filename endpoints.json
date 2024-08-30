@@ -251,5 +251,18 @@
         }
       ]
     }
+  },
+  "GET /api/users/:username": {
+    "description": "Responds with user object given the username",
+    "queries": ["username"],
+    "exampleResponse": {
+      "user": [
+        {
+          "username": "icellusedkars",
+          "name": "sam",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+        }
+      ]
+    }
   }
 }

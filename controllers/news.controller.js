@@ -8,6 +8,7 @@ const {
   updateArticle,
   deleteItem,
   selectUsers,
+  selectUser,
 } = require("../models/news.model");
 
 exports.getAllTopics = (request, response, next) => {
@@ -89,4 +90,11 @@ exports.getAllUsers = (request, response, next) => {
   selectUsers().then((users) => {
     response.status(200).send({ users });
   });
+};
+
+exports.getUserByUsername = (request, response, next) => {
+  const { username } = request.params;
+  selectUser(username)
+    .then((user) => response.status(200).send({ user }))
+    .catch((err) => next(err));
 };

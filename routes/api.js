@@ -10,6 +10,7 @@ const {
   updateArticleById,
   deleteByCommentId,
   getAllUsers,
+  getUserByUsername,
 } = require("../controllers/news.controller");
 
 router.route("/").get(getApi);
@@ -19,6 +20,8 @@ router.route("/articles").get(getAllArticles);
 router.route("/topics").get(getAllTopics);
 
 router.route("/users").get(getAllUsers);
+
+router.route("/users/:username").get(getUserByUsername);
 
 router
   .route("/articles/:article_id")
