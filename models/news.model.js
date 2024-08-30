@@ -30,9 +30,30 @@ exports.selectArticle = (article_id) => {
     });
 };
 
-exports.getArticles = (sort_by, order) => {
-  let queryString = `SELECT COUNT (comments.article_id) AS comment_count, articles.title, articles.topic, articles.author, articles.created_at, articles.votes,articles.article_img_url, comments.article_id FROM articles JOIN comments ON articles.article_id = comments.article_id 
-GROUP BY articles.title, articles.topic, articles.author, articles.created_at, articles.votes,articles.article_img_url, comments.article_id`;
+exports.getArticles = (sort_by, order, topic) => {
+  let queryValues = [];
+
+  let queryString = `SELECT COUNT (comments.article_id) AS comment_count, articles.title, articles.topic, articles.author, articles.created_at, articles.votes,articles.article_img_url, comments.article_id FROM articles JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.title, articles.topic, articles.author, articles.created_at, articles.votes,articles.article_img_url, comments.article_id`;
+
+  if (topic) {
+    queryString = `SELECT COUNT (comments.article_id) AS comment_count, articles.title, articles.topic, articles.author, articles.created_at, articles.votes,articles.article_img_url, comments.article_id FROM articles JOIN comments ON articles.article_id = comments.article_id WHERE topic = $1 GROUP BY articles.title, articles.topic, articles.author, articles.created_at, articles.votes,articles.article_img_url, comments.article_id`;
+    queryValues.push(topic);
+  }
+
+  const allowedInputs = [
+    "comment_count",
+    "title",
+    "topic",
+    "author",
+    "created_at",
+    "votes",
+    "article_img_url",
+    "article_id",
+  ];
+
+  if (sort_by && !allowedInputs.includes(sort_by)) {
+    return Promise.reject({ status: 404, message: "Invalid request" });
+  }
 
   if (sort_by && order) {
     queryString += ` ORDER BY ${sort_by} ${order.toUpperCase()};`;
@@ -44,7 +65,10 @@ GROUP BY articles.title, articles.topic, articles.author, articles.created_at, a
     queryString += ` ORDER BY created_at DESC`;
   }
 
-  return db.query(queryString).then((data) => {
+  return db.query(queryString, queryValues).then((data) => {
+    if (data.rows.length === 0) {
+      return Promise.reject({ status: 404, message: "Invalid request" });
+    }
     return data.rows;
   });
 };
