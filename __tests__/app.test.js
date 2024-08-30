@@ -461,7 +461,7 @@ describe("GET /api/articles/:article_id (comment_count)", () => {
   });
 });
 
-describe.only("GET /api/users/:username", () => {
+describe("GET /api/users/:username", () => {
   test("200 - responds with 200 and returns a user by username", () => {
     return supertest(app)
       .get("/api/users/icellusedkars")
