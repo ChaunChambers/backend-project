@@ -60,29 +60,18 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/1")
       .then(({ body }) => {
         expect(body.article.article_id).toEqual(1);
-        expect(body.article).toHaveProperty("title");
-        expect(body.article).toHaveProperty("topic");
-        expect(body.article).toHaveProperty("author");
-        expect(body.article).toHaveProperty("body");
-        expect(body.article).toHaveProperty("created_at");
-        expect(body.article).toHaveProperty("votes");
-        expect(body.article).toHaveProperty("article_img_url");
-
-        //PLEASE NOTE//
-        //I am using toHaveProperty because the code below is not working, it says right-hand side of "instanceof" is not an object
-
-        // expect(body.article).toEqual(
-        //   expect.objectContaining({
-        //     title: "Living in the shadow of a great man",
-        //     topic: "mitch",
-        //     author: "butter_bridge",
-        //     body: "I find this existence challenging",
-        //     created_at: expect.any(Date.now()),
-        //     votes: 100,
-        //     article_img_url:
-        //       "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-        //   })
-        // );
+        expect(body.article).toEqual(
+          expect.objectContaining({
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: expect.any(String),
+            votes: 100,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          })
+        );
       });
   });
   test("GET:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
@@ -396,3 +385,47 @@ describe("GET /api/articles (sorting queries)", () => {
       });
   });
 });
+
+describe("GET /api/articles (topic query)", () => {
+  test("200 - responds with only the articles that match the topic query", () => {
+    return supertest(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBeGreaterThan(0);
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              topic: "cats",
+            })
+          );
+        });
+      });
+  });
+  test("200 - if topic query is omitted should respond with all articles", () => {
+    return supertest(app)
+      .get("/api/articles?topic")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBeGreaterThan(0);
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              title: expect.any(String),
+              topic: expect.any(String),
+              author: expect.any(String),
+              comment_count: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+  test("404 - reponds with appropriate code if non-existent topic given", () => {
+    return supertest(app).get("/api/articles?topic=apple").expect(404);
+  });
+});
+
+/**/
