@@ -66,7 +66,7 @@ describe("GET /api/articles/:article_id", () => {
             title: "Living in the shadow of a great man",
             topic: "mitch",
             author: "butter_bridge",
-            comment_count: expect.any(String),
+            comment_count: expect.any(Number),
             created_at: expect.any(String),
             votes: 100,
             article_img_url:
@@ -438,7 +438,7 @@ describe("GET /api/articles/:article_id (comment_count)", () => {
         expect(article).toEqual(
           expect.objectContaining({
             article_id: 1,
-            comment_count: expect.any(String),
+            comment_count: expect.any(Number),
           })
         );
       });
