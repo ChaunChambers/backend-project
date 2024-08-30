@@ -18,7 +18,10 @@ exports.selectApi = () => {
 
 exports.selectArticle = (article_id) => {
   return db
-    .query("SELECT * FROM articles WHERE article_id=$1", [article_id])
+    .query(
+      "SELECT COUNT (comments.article_id) AS comment_count, articles.title, articles.topic, articles.author, articles.created_at, articles.votes,articles.article_img_url, comments.article_id FROM articles JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1 GROUP BY articles.title, articles.topic, articles.author, articles.created_at, articles.votes,articles.article_img_url, comments.article_id;",
+      [article_id]
+    )
     .then(({ rows }) => {
       if (rows.length === 0) {
         return Promise.reject({
@@ -30,15 +33,18 @@ exports.selectArticle = (article_id) => {
     });
 };
 
-exports.getArticles = (sort_by, order, topic) => {
+exports.getArticles = (sort_by, order, topic, article_id) => {
   let queryValues = [];
-
-  let queryString = `SELECT COUNT (comments.article_id) AS comment_count, articles.title, articles.topic, articles.author, articles.created_at, articles.votes,articles.article_img_url, comments.article_id FROM articles JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.title, articles.topic, articles.author, articles.created_at, articles.votes,articles.article_img_url, comments.article_id`;
-
+  let queryStringTopic = "";
   if (topic) {
-    queryString = `SELECT COUNT (comments.article_id) AS comment_count, articles.title, articles.topic, articles.author, articles.created_at, articles.votes,articles.article_img_url, comments.article_id FROM articles JOIN comments ON articles.article_id = comments.article_id WHERE topic = $1 GROUP BY articles.title, articles.topic, articles.author, articles.created_at, articles.votes,articles.article_img_url, comments.article_id`;
+    queryStringTopic += ` WHERE topic = $1`;
     queryValues.push(topic);
   }
+
+  let queryString =
+    `SELECT COUNT (comments.article_id) AS comment_count, articles.title, articles.topic, articles.author, articles.created_at, articles.votes,articles.article_img_url, comments.article_id FROM articles JOIN comments ON articles.article_id = comments.article_id` +
+    queryStringTopic +
+    ` GROUP BY articles.title, articles.topic, articles.author, articles.created_at, articles.votes,articles.article_img_url, comments.article_id`;
 
   const allowedInputs = [
     "comment_count",

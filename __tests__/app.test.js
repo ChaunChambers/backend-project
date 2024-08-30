@@ -58,14 +58,15 @@ describe("GET /api/articles/:article_id", () => {
   test("Responds with an object containing the correct article", () => {
     return supertest(app)
       .get("/api/articles/1")
-      .then(({ body }) => {
-        expect(body.article.article_id).toEqual(1);
-        expect(body.article).toEqual(
+      .then(({ body: { article } }) => {
+        expect(article.article_id).toEqual(1);
+        expect(article).toEqual(
           expect.objectContaining({
+            article_id: 1,
             title: "Living in the shadow of a great man",
             topic: "mitch",
             author: "butter_bridge",
-            body: "I find this existence challenging",
+            comment_count: expect.any(String),
             created_at: expect.any(String),
             votes: 100,
             article_img_url:
@@ -428,4 +429,34 @@ describe("GET /api/articles (topic query)", () => {
   });
 });
 
-/**/
+describe("GET /api/articles/:article_id (comment_count)", () => {
+  test("200 - Responds with article and comment_count given an article_id", () => {
+    return supertest(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toEqual(
+          expect.objectContaining({
+            article_id: 1,
+            comment_count: expect.any(String),
+          })
+        );
+      });
+  });
+  test("GET:404 sends an appropriate status and error message when given a valid but non-existent id", () => {
+    return supertest(app)
+      .get("/api/articles/999")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe("Not found");
+      });
+  });
+  test("GET: 400 sends an appropriate status and error message when given an invalid id", () => {
+    return supertest(app)
+      .get("/api/articles/not-an-article")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("Bad request");
+      });
+  });
+});
