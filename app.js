@@ -1,6 +1,9 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const { getErrorHandler } = require("./error_handling/errors");
+
+app.use(cors());
 
 app.use(express.json());
 
