@@ -254,13 +254,29 @@
   },
   "GET /api/users/:username": {
     "description": "Responds with user object given the username",
-    "queries": ["username"],
+    "queries": [],
     "exampleResponse": {
       "user": [
         {
           "username": "icellusedkars",
           "name": "sam",
           "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+        }
+      ]
+    }
+  },
+  "GET /api/comments/:comment_id": {
+    "description": "Responds with comment object given a comment_id",
+    "queries": [],
+    "exampleResponse": {
+      "comment": [
+        {
+          "comment_id": 18,
+          "body": "Dicta aut quo unde cupiditate dolorum. Voluptas mollitia exercitationem vel porro dolor. Ea autem est pariatur.",
+          "article_id": 5,
+          "author": "jessjelly",
+          "votes": 6,
+          "created_at": "2020-08-15T18:11:00.000Z"
         }
       ]
     }

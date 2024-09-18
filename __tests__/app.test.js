@@ -226,7 +226,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(400)
       .then((response) => expect(response.body.message).toBe("Bad request"));
   });
-  test.only("404 Error when attempting to post with an invalid username", () => {
+  test("404 Error when attempting to post with an invalid username", () => {
     const newComment = {
       username: "fake_username",
       content_body: "New comment",
@@ -482,7 +482,7 @@ describe("GET /api/users/:username", () => {
   });
 });
 
-describe.only("GET /api/comments/:comment_id", () => {
+describe("GET /api/comments/:comment_id", () => {
   test("204 - get comment by comment id", () => {
     return supertest(app)
       .get("/api/comments/18")
