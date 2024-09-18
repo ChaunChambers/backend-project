@@ -226,7 +226,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(400)
       .then((response) => expect(response.body.message).toBe("Bad request"));
   });
-  test("404 Error when attempting to post with an invalid username", () => {
+  test.only("404 Error when attempting to post with an invalid username", () => {
     const newComment = {
       username: "fake_username",
       content_body: "New comment",
@@ -250,12 +250,12 @@ describe("POST /api/articles/:article_id/comments", () => {
 });
 
 describe("PATCH /api/articles/:article_id", () => {
-  test.only("200 - updates articles in database when given article id", () => {
+  test("200 - updates articles in database when given article id", () => {
     const newVote = {
       inc_votes: 8,
     };
     return supertest(app)
-      .patch("/api/articles/1")
+      .patch("/api/articles/2")
       .send(newVote)
       .expect(200)
       .then(({ body: { comments } }) => {
@@ -479,5 +479,26 @@ describe("GET /api/users/:username", () => {
   });
   test("400 - responds with appropriate code and message when a username doesn't exist", () => {
     return supertest(app).get("/api/users/appletree").expect(404);
+  });
+});
+
+describe.only("GET /api/comments/:comment_id", () => {
+  test("204 - get comment by comment id", () => {
+    return supertest(app)
+      .get("/api/comments/18")
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment.comment_id).toEqual(18);
+        expect(comment).toEqual(
+          expect.objectContaining({
+            comment_id: expect.any(Number),
+            body: expect.any(String),
+            article_id: expect.any(Number),
+            author: expect.any(String),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+          })
+        );
+      });
   });
 });

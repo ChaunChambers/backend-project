@@ -9,6 +9,7 @@ const {
   deleteItem,
   selectUsers,
   selectUser,
+  selectComment,
 } = require("../models/news.model");
 
 exports.getAllTopics = (request, response, next) => {
@@ -84,6 +85,14 @@ exports.deleteByCommentId = (request, response, next) => {
     .catch((err) => {
       next(err);
     });
+};
+
+exports.getCommentByCommentId = (request, response, next) => {
+  const { comment_id } = request.params;
+  selectComment(comment_id).then((comment) => {
+    response.status(200).send({ comment });
+    console.log(comment);
+  });
 };
 
 exports.getAllUsers = (request, response, next) => {

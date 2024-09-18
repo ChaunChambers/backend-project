@@ -11,6 +11,7 @@ const {
   deleteByCommentId,
   getAllUsers,
   getUserByUsername,
+  getCommentByCommentId,
 } = require("../controllers/news.controller");
 
 router.route("/").get(getApi);
@@ -22,6 +23,8 @@ router.route("/topics").get(getAllTopics);
 router.route("/users").get(getAllUsers);
 
 router.route("/users/:username").get(getUserByUsername);
+
+router.route("/comments/:comment_id").get(getCommentByCommentId);
 
 router
   .route("/articles/:article_id")
